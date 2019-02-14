@@ -1,11 +1,19 @@
 package com.lab11.q11_6;
 
 public class Department {
-
+	
 	private int departmentId;
 	private String departmentName;
 	private int managerId;
 	
+	
+	
+	public Department(int departmentId, String departmentName, int managerId) {
+		super();
+		this.departmentId = departmentId;
+		this.departmentName = departmentName;
+		this.managerId = managerId;
+	}
 	public int getDepartmentId() {
 		return departmentId;
 	}
@@ -24,4 +32,6 @@ public class Department {
 	public void setManagerId(int managerId) {
 		this.managerId = managerId;
 	}
+	
+	
 }

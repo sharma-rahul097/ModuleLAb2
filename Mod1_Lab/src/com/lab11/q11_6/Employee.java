@@ -4,36 +4,38 @@ import java.time.LocalDate;
 
 public class Employee {
 
-	private int empId;
+	private int employeeId;
 	private String firstName;
 	private String lastName;
 	private String email;
-	private String phoneNo;
+	private String phoneNumber;
 	private LocalDate hireDate;
-	private String designation;
+	private String Designation;
 	private double salary;
 	private int managerId;
-	private Department department;
+	Department department;
 	
-	public Employee(int empId, String firstName, String lastName, String email, String phoneNo, LocalDate hireDate,
-			String designation, double salary, int managerId, Department department) {
+	
+	public Employee(int employeeId, String firstName, String lastName, String email, String phoneNumber,
+			LocalDate hireDate, String designation, double salary, int managerId, Department department) {
 		super();
-		this.empId = empId;
+		this.employeeId = employeeId;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;
-		this.phoneNo = phoneNo;
+		this.phoneNumber = phoneNumber;
 		this.hireDate = hireDate;
-		this.designation = designation;
+		Designation = designation;
 		this.salary = salary;
 		this.managerId = managerId;
 		this.department = department;
 	}
-	public int getEmpId() {
-		return empId;
+	
+	public int getEmployeeId() {
+		return employeeId;
 	}
-	public void setEmpId(int empId) {
-		this.empId = empId;
+	public void setEmployeeId(int employeeId) {
+		this.employeeId = employeeId;
 	}
 	public String getFirstName() {
 		return firstName;
@@ -53,11 +55,11 @@ public class Employee {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	public String getPhoneNo() {
-		return phoneNo;
+	public String getPhoneNumber() {
+		return phoneNumber;
 	}
-	public void setPhoneNo(String phoneNo) {
-		this.phoneNo = phoneNo;
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
 	}
 	public LocalDate getHireDate() {
 		return hireDate;
@@ -66,10 +68,10 @@ public class Employee {
 		this.hireDate = hireDate;
 	}
 	public String getDesignation() {
-		return designation;
+		return Designation;
 	}
 	public void setDesignation(String designation) {
-		this.designation = designation;
+		Designation = designation;
 	}
 	public double getSalary() {
 		return salary;
@@ -89,4 +91,14 @@ public class Employee {
 	public void setDepartment(Department department) {
 		this.department = department;
 	}
+
+	@Override
+	public String toString() {
+		return "Employee [employeeId=" + employeeId + ", firstName=" + firstName + ", lastName=" + lastName + ", email="
+				+ email + ", phoneNumber=" + phoneNumber + ", hireDate=" + hireDate + ", Designation=" + Designation
+				+ ", salary=" + salary + ", managerId=" + managerId + ", department=" + department + "]";
+	}
+	
+	
+	
 }
