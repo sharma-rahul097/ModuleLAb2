@@ -1,0 +1,155 @@
+****************************************************JOINS***********************************************************************
+Query:1
+select staff_name "Name",sm.dept_code "Department number",dept_name "Department name",staff_sal "Salary" from staff_masters sm,department_masters dm
+where sm.dept_code =dm.dept_code and staff_sal>20000;
+
+Output:-
+Name                                               Department number Department name                                        Salary
+-------------------------------------------------- ----------------- -------------------------------------------------- ----------
+Mohan                                                             10 Computer Science                                        24000
+John                                                              10 Computer Science                                        32000
+Allen                                                             30 Electronics                                             42000
+Smith                                                             20 Electricals                                             62000
+Rahul                                                             20 Electricals                                             22000
+Ram                                                               30 Electronics                                             32000
+
+6 rows selected.
+
+Query:2
+ select staff_code "staff#",staff_name "staff",dept_name "Department name",mgr_code "MGR#"
+ from staff_masters sm,department_masters dm where sm.dept_code = dm.dept_code;
+
+Output:-
+    staff# staff                                              Department name                                          MGR#
+---------- -------------------------------------------------- -------------------------------------------------- ----------
+    100001 Arvind                                             Electronics                                            100006
+    100002 Shyam                                              Electricals                                            100007
+    100003 Mohan                                              Computer Science                                       100006
+    100004 Anil                                               Electricals                                            100006
+    100005 John                                               Computer Science                                       100007
+    100006 Allen                                              Electronics                                            100005
+    100007 Smith                                              Electricals                                            100005
+    100008 Raviraj                                            Mechanics                                              100006
+    100009 Rahul                                              Electricals                                            100006
+    100010 Ram                                                Electronics                                            100007
+
+10 rows selected.
+
+Query:3
+select sm.student_code "Student Code",student_name "Student Name",bm.book_code "Book Code",book_name "Book Name"
+       from student_masters sm,book_masters bm,book_transactions bt where sm.student_code = bt.student_code and bm.book_code = bt.book_code
+       and bt.book_expected_return_date = sysdate
+Output:-
+no rows selected
+
+Query:4
+ select sm.staff_code "Staff Code",staff_name "Staff Name",dept_name "Department Name",design_name "Designation Name",bm.book_code "Book Code"
+  2  ,book_name "Book Name",book_issue_date "Issue date" from staff_masters sm,department_masters dm,designation_masters dgm,
+  3  book_masters bm,book_transactions bt where sm.staff_code = bt.staff_code and bm.book_code = bt.book_code and
+  4* sm.design_code = dgm.design_code and sm.dept_code = dm.dept_code and bt.book_issue_date between '15-FEB-11' and '15-MAR-11'
+
+Output:-
+Staff Code Staff Name                                         Department Name                                    Designation Name                                    Book Code Book Name                                   Issue dat
+---------- -------------------------------------------------- -------------------------------------------------- -------------------------------------------------- ---------- -------------------------------------------------- ---------
+    100006 Allen                                              Electronics                                        Reader                                               10000008 Computer Networks                           10-MAR-11
+    100007 Smith                                              Electricals                                        Reader                                               10000005 Relational DBMS                             14-MAR-11
+
+Query:5
+ 1   select sm.staff_code "Staff Code",staff_name "Staff Name",dept_name "Department Name",design_name "Designation Name",bm.book_code "Book Code"
+  2     ,book_name "Book Name", abs(5*(extract(day from book_actual_return_date)-extract(day from book_expected_return_date))) "Fine" from staff_masters sm,department_masters dm,designation_masters dgm,
+  3     book_masters bm,book_transactions bt where sm.staff_code = bt.staff_code and bm.book_code = bt.book_code and
+  4*    sm.design_code = dgm.design_code and sm.dept_code = dm.dept_code
+
+Output:-
+Staff Code Staff Name                                         Department Name                            Designation Name                                    Book Code Book Name
+                                       																								  Fine
+---------- -------------------------------------------------- -------------------------------------------------- -------------------------------------------------- ---------- -------------------------------------------------- ----------
+    100006 Allen                                              Electronics                                Reader                                               10000008 Computer Networks                                  	   10
+    100006 Allen                                              Electronics                                Reader                                               10000007 Intoduction To Algorithams                                   5
+    100010 Ram                                                Electronics                                Reader                                               10000009 Introduction to O/S                                         10
+    100007 Smith                                              Electricals                                Reader                                               10000007 Intoduction To Algorithams                                   5
+    100007 Smith                                              Electricals                                Reader                                               10000005 Relational DBMS                                              0
+Query:6
+select staff_code "Staff Code",staff_name "Staff Name", staff_sal "Salary" from staff_masters where staff_sal < (select avg(staff_sal) from staff_masters)
+
+Output:-
+Staff Code Staff Name                                             Salary
+---------- -------------------------------------------------- ----------
+    100001 Arvind                                                  17000
+    100002 Shyam                                                   20000
+    100003 Mohan                                                   24000
+    100004 Anil                                                    20000
+    100008 Raviraj                                                 18000
+    100009 Rahul                                                   22000
+
+6 rows selected.
+
+Query:7
+select Book_pub_author "Author Name", Book_name "Book Name"
+  2    from book_masters
+  3   where Book_pub_author in ( select Book_pub_author
+  4                                from book_masters
+  5                               group by Book_pub_author
+  6                              having count(1)>1 )
+  7*  group by Book_pub_author, Book_name
+
+Output:-
+Author Name                                        Book Name
+-------------------------------------------------- --------------------------------------------------
+H.Schild                                           JAVA Complete Reference
+H.Schild                                           J2EE Complete Reference
+Yashavant Kanetkar                                 Let Us C++
+Yashavant Kanetkar                                 Let Us C
+
+Query:8
+select sm.staff_code "Staff Code",staff_name "Staff Name",dept_name "Department Name"
+  2    from staff_masters sm,department_masters dm,book_transactions bt
+  3   where sm.dept_code = dm.dept_code and sm.staff_code = bt.staff_code and sm.staff_code in ( select staff_code
+  4                                from book_transactions
+  5                               group by staff_code
+  6                              having count(1)>1 )
+  7*  group by sm.staff_code, staff_name,dept_name
+
+Output:-
+Staff Code Staff Name                                         Department Name
+---------- -------------------------------------------------- --------------------------------------------------
+    100007 Smith                                              Electricals
+    100006 Allen                                              Electronics
+
+Query:9
+ 1  select student_code "Student Code",student_name "Student Name",dept_name "Department Name" from student_masters sm,department_masters dm
+  2  where sm.dept_code = dm.dept_code and sm.dept_code in (select dept_code from student_masters group by dept_code having count(1) = (select max(mycount) from
+  3  (select dept_code , count(dept_code) mycount from student_masters group by dept_code)))
+  4* group by student_code,student_name,dept_name
+
+Output:-
+Student Code Student Name                                       Department Name
+------------ -------------------------------------------------- --------------------------------------------------
+        1020 Amrit                                              Computer Science
+        1002 Ravi                                               Computer Science
+        1001 Amit                                               Computer Science
+        1008 Dev                                                Computer Science
+        1014 Sunil                                              Computer Science
+
+Query:10
+select staff_code "Staff Code",staff_name "Staff Name", dept_name "Department Name", design_name "Designation Name" from staff_masters sm,department_masters dm,designation_masters
+ dgm where sm.dept_code = dm.dept_code and sm.design_code = dgm.design_code and sm.hiredate between add_months(sysdate,-3) and sysdate
+
+Output:-
+Staff Code Staff Name                                         Department Name                            Designation Name
+---------- -------------------------------------------------- -------------------------------------------------- --------------------------------------------------
+    100002 Shyam                                              Electricals                                Professor
+    100003 Mohan                                              Computer Science                           Professor
+    100010 Ram                                                Electronics                                Reader
+
+Query:11
+ select mgr_code "Manager Code",count(mgr_code) "Total Strength" from staff_masters group by mgr_code having count(mgr_code)>1
+
+Output:-
+Manager Code Total Strength
+------------ --------------
+      100005              2
+      100006              5
+      100007              3
+
+Query:12

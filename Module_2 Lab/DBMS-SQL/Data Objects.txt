@@ -1,0 +1,125 @@
+Query:1
+create table 
+
+Qurey:2 
+alter table customeri modify cust_name varchar2(30);
+alter table customeri rename column cust_name to customerName;
+
+Query:3
+ alter table customeri add (gender varchar2(1), age number(3), phoneNo number(10));
+
+Query:4
+Insert into customeri values(1000, 'Allen','#115 Chicago', '#115 Chicago','M', 25, 7878776);
+Insert into customeri values(1001, 'George', '#116 France', '#116 France', 'M', 25, 434524);
+Insert into customeri values(1002, 'Becker','#114 New York','#114 New York', 'M', 45, 431525);
+
+Query:5
+alter table customeri modify(CONSTRAINT custid_prim PRIMARY KEY(cust_id));
+
+Query:6
+ Insert into customeri values(1002, 'John', '#114 Chicago',' #114 Chicago', 'M', 45, 439525);
+
+Output:
+ERROR at line 1:
+ORA-00001: unique constraint (SYSTEM.CUSTID_PRIM) violated
+
+Query:7
+alter table customeri drop CONSTRAINT custid_prim;
+
+Query:8
+alter table customeri enable constraint custid_prim;
+
+Output:
+ERROR at line 1:
+ORA-02437: cannot validate (SYSTEM.CUSTID_PRIM) - primary key violated
+
+Query:9
+alter table customeri drop CONSTRAINT custid_prim;
+
+Query:10
+truncate table customeri;
+
+Query:11
+alter table customeri add (email varchar2(20));
+
+Query:12
+ alter table customeri drop column email;
+
+Query:13
+create table supplier(suppId,sname,addr1,addr2,contactno) as select cust_id,customername,address1,address2,phoneno from customeri;
+
+Query:14
+create table customerMaster(customerId number(5) constraint custid_pk primary key,customerName varchar2(30) not null, 
+			    address1 varchar2(30) not null,address2 varchar2(30),gender varchar2(1),age number(3),phoneNo number(10));
+
+Query:15
+create table accountMaster(customerid number(5), accountNumber number(10,2) constraint Acc_pk primary key,accounttype char(3),ledgerBal number(10,2) not null);
+create sequence seq1
+  2  start with 1018934
+  3  increment by +1
+  4  minvalue 1000000
+  5  maxvalue 1999999
+  6  cycle;
+
+Query:16
+alter table accountMaster add constraint cust_acc foreign key (customerid) references customerMaster(customerid);
+
+Query:17
+Insert into customerMaster values(1000, 'Allen', '#115 Chicago', '#115 Chicago', 'M', 25, 7878776);
+Insert into customerMaster values(1001, 'George', '#116 France', '#116 France', 'M', 25, 434524);
+Insert into customerMaster values(1002, 'Becker', '#114 New York', '#114 New York', 'M', 45, 431525);
+
+Query:18
+alter table accountMaster modify(check(accounttype='NRI' or accounttype='IND'));
+
+Query:19
+alter table accountMaster modify(Constraint balance_check check(ledgerbal>5000));
+
+Query:20
+delete from accountMaster,customerMaster where customerid = 1000;
+
+Query:21
+create table accountDetails as select * from accountMaster;
+
+Query:22
+ create View cust_view(customerCode,AccountHolderName,accountNumber,Type,Balance) as select am.customerid,customername,accountnumber,accounttype,ledgerbal from 
+			accountMaster am,customerMaster cm where am.customerid = cm.customerid;
+
+Query:23
+create view vAccs_dtls as select accounttype,ledgerbal from accountMaster where accounttype='IND' and ledgerbal>10000;
+
+Query:24
+create view accsvw10 as select * from customerMaster with read only;
+
+Query:25
+ create sequence seq_dept
+  2  start with 40
+  3  increment by +10
+  4  minvalue 40
+  5  maxvalue 200
+  6  cache 40;
+
+Query:26
+insert into dept_masters values(seq_dept.nextval,'admin');
+insert into dept_masters values(seq_dept.nextval,'java');
+insert into dept_masters values(seq_dept.nextval,'python');
+
+Query:27
+drop sequence seq_dept;
+
+Query:28
+create index no_name on customerMaster(customername);
+select * from customerMaster;
+
+Query:29
+create synonym synEmp for emp;
+
+Query:30
+select * from synEmp;
+
+Query:31
+create index idx_emp_hiredate on employees(hiredate);
+
+Query:32
+create sequence seq_emp start with 1001 increment by +1 minvalue 1001 cache 1001; 
+

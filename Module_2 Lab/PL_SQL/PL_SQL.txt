@@ -1,0 +1,248 @@
+Query:1.1
+DECLARE
+V_Sample1 NUMBER(2); -------------------------Correct
+V_Sample2 CONSTANT NUMBER(2) ;----------------Incorrect:It does not initialize a variable for make number datatype constant
+V_Sample3 NUMBER(2) NOT NULL ;----------------Incorrect:It does not initialize a variable
+V_Sample4 NUMBER(2) := 50;--------------------Correct
+V_Sample5 NUMBER(2) DEFAULT 25;---------------Correct
+
+Query:1.2
+DECLARE --outer block
+var_num1 NUMBER := 5;
+BEGIN
+DECLARE --inner block
+var_num1 NUMBER := 10;
+BEGIN
+DBMS_OUTPUT.PUT_LINE('Value for var_num1:' ||var_num1);
+--Can outer block variable (var_num1) be printed here.IfYes,Print the same.
+END;
+DBMS_OUTPUT.PUT_LINE('Value for var_num1:' ||var_num1);
+--Can inner block variable(var_num1)  be printed here.IfYes,Print the same.
+END;
+/
+
+
+Query:1.3
+DECLARE
+	v_empD emp%ROWTYPE;
+BEGIN
+	select * into v_empD from emp where empno=7369;
+	dbms_output.put_line('Employee Details:'||v_empD.empno||' '||v_empD.ename||' '||v_empD.job||' '||v_empD.mgr||' '||v_empD.hiredate||' '||v_empD.sal||' '||v_empD.comm||' '||v_empD.deptno);
+END;
+/
+
+Query:1.4
+DECLARE
+	v_emp varchar2(10);
+	v_empD emp%ROWTYPE;
+BEGIN
+	v_emp := '&a';
+	select * into v_empD from emp where ename = v_emp;
+	dbms_output.put_line('Employee Details:'||v_empD.empno||' '||v_empD.ename||' '||v_empD.job||' '||v_empD.mgr||' '||v_empD.hiredate||' '||v_empD.sal||' '||v_empD.comm||' '||v_empD.deptno);
+END;
+/
+
+Query:1.5
+DECLARE
+       v_dept number := &a;
+        CURSOR employee_cur IS
+          SELECT *
+          FROM   emp
+          WHERE  deptno = v_dept
+          FOR UPDATE;
+        incr_sal NUMBER;
+    BEGIN
+       FOR employee_rec IN employee_cur LOOP
+           IF employee_rec.sal >= 5000 THEN
+             incr_sal := 5000;
+           ELSE
+             incr_sal := .30;
+           END IF;
+          UPDATE emp
+           SET    sal = sal + sal * incr_sal
+           WHERE  CURRENT OF employee_cur;
+      dbms_output.put_line('Salary:'||employee_rec.sal);
+       END LOOP;
+  END;
+/
+
+Query:2.1
+DECLARE
+V_BONUS V_SAL%TYPE;-----------------------------
+V_SAL STAFF_MASTER.STAFF_SAL%TYPE;
+
+BEGIN
+SELECT STAFF_SAL INTO V_SAL
+FROM STAFF_MASTER 
+WHERE MGR_CODE=100006;
+
+V_BONUS:=2*V_SAL;
+DBMS_OUTPUT.PUT_LINE('STAFF SALARY IS ' || V_SAL);
+DBMS_OUTPUT.PUT_LINE('STAFF BONUS IS ' || V_BONUS);
+
+EXCEPTION
+WHEN NO_DATA_FOUND THEN
+DBMS_OUTPUT.PUT_LINE('GIVEN CODE IS NOT VALID.ENTER VALID CODE');
+END;
+
+Query:2.2
+
+DECLARE
+       v_code staff_masters.staff_sal%TYPE := &a;
+	v_bonus number;
+        CURSOR employee_cur IS
+          SELECT staff_sal,mgr_code
+          FROM   staff_masters
+          WHERE  mgr_code = v_code;
+BEGIN
+        FOR V_SAL IN employee_cur LOOP
+           v_bonus := 2 * V_SAL.staff_sal;
+	  dbms_output.put_line('Bonus:'||v_bonus);
+          dbms_output.put_line('Salary:'||V_SAL.staff_sal);	
+        END LOOP;
+EXCEPTION
+	when NO_DATA_FOUND then
+	dbms_output.put_line('given code is wrong');
+END;
+/
+
+Query:2.3
+DECLARE
+       v_code number ;
+	com number;
+	Not_exist EXCEPTION;
+BEGIN
+	v_code := &code;
+       select comm into com from emp where empno = v_code;
+	if com is null then
+		RAISE Not_exist;
+	end if; 
+          dbms_output.put_line('Commission:'||com);	
+EXCEPTION
+	when Not_exist then
+	dbms_output.put_line('Commission not found!');
+END;
+/
+
+Query:3.1
+
+Create or replace procedure ret_age(s_date in date,age out number) is
+BEGIN
+	select extract(year from s_date) into age from dual;
+Exception
+	When no_data_found then
+	dbms_output.put_line('something went wrong!');
+END ret_age;
+/
+
+Query:3.2
+
+Create or replace procedure ret_staff(s_cod in number,s_code out number,s_name out varchar2,d_code out number,mgr out number) is
+BEGIN
+	select staff_code,staff_name,dept_code,mgr_code into s_code,s_name,d_code,mgr from staff_masters where staff_code = s_cod;
+Exception
+	When no_data_found then
+	dbms_output.put_line('something went wrong!');
+END ret_staff;
+/
+
+Query:3.3
+
+create or replace function CostToComp(code in number) return number
+is
+    sal staff_masters.staff_sal%type;
+    exp number;
+BEGIN
+    select staff_sal,round(months_between(sysdate,hiredate)/12) as EXP into sal, exp from staff_masters where staff_code=code;
+    if exp>4 then
+    sal:=sal+ (0.3*sal)+(0.15*sal)+(0.2*sal)+(0.08*sal);
+    elsif exp between 2 and 4 then
+    sal:=sal+ (0.2*sal)+(0.15*sal)+(0.2*sal)+(0.08*sal);
+    elsif exp between 1 and 2 then
+    sal:=sal+ (0.1*sal)+(0.15*sal)+(0.2*sal)+(0.08*sal);
+    else 
+    sal:=sal+(0.15*sal)+(0.2*sal)+(0.08*sal);
+    end if;
+    return sal;
+end;
+
+Query:3.4
+
+CREATE TABLE STAFF_MASTERS_BACK AS(SELECT * FROM STAFF_MASTERS);
+TRUNCATE TABLE STAFF_MASTERS_BACK;
+ 
+create or replace procedure staff_backup(s_code in staff_masters.staff_code%type)
+    is
+    exp number;
+    v_sal staff_masters.staff_sal%type;
+BEGIN
+    insert into staff_masters_back(select * from staff_masters where staff_code=s_code);
+    select staff_sal, round(months_between(sysdate,hiredate)/12) 
+	into v_sal, exp from staff_masters where staff_code=s_code;
+ 
+    if v_sal IS NULL THEN
+	RAISE NO_DATA_FOUND;
+ 
+    if exp>5 then
+    	v_sal := (1.25 * v_sal);
+    end if;
+    if exp between 2 and 5 then
+    	v_sal:= (1.20 * v_sal);
+    end if;
+    update staff_masters set staff_sal=v_sal;
+	EXCEPTION
+		WHEN NO_DATA_FOUND THEN
+			DBMS_OUTPUT.PUT_LINE("NO DATA FOUND! PLS VERIFY");
+end;
+
+Query:3.5
+
+create or replace procedure insertrecords
+(bcode in book_transactions.book_code%type,
+code in number
+)as
+code1 number;
+exc exception;
+doe varchar2(50);
+doe1 date;
+cursor mycur1 is 
+select staff_code from staff_masters where staff_code=code;
+cursor mycur2 is 
+select student_code from student_masters where student_code=code;
+begin 
+select to_char(sysdate+10,'DAY') INTO doe FROM DUAL;
+if(doe='SATURDAY') then
+select (sysdate+12) INTO doe1 FROM DUAL;
+elsif (doe='SUNDAY')then
+select (sysdate+11) INTO doe1 FROM DUAL;
+else
+select (sysdate+10) INTO doe1 FROM DUAL;
+end if;
+open mycur1;
+open mycur2;
+loop
+fetch mycur1 into code1;
+if(mycur1%notfound and mycur1%rowcount=0) then
+fetch mycur2 into code1;
+if(mycur2%notfound and mycur2%rowcount=0) then
+raise exc;
+else
+exit when(mycur2%notfound);
+insert into book_transactions values(bcode,code1,null,sysdate,doe1,null);
+end if; 
+else
+exit when(mycur1%notfound);
+insert into book_transactions values(bcode,null,code1,sysdate,doe1,null);
+end if;
+end loop;
+exception
+when exc then
+dbms_output.put_line('not found');
+end;
+ 
+/
+show error;
+delete from  book_transactions where book_issue_date LIKE '%07-OCT-17%';
+ 
+execute insertrecords(10000007,100002);
+execute insertrecords('10000002','1015');

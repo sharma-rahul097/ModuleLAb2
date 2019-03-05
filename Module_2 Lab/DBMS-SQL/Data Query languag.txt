@@ -1,0 +1,44 @@
+Query:1
+select staff_name as "Name",design_code "Designation Code" from staff_masters
+ where hiredate< '1-JAN-2003' and staff_sal between 12000 and 25000;
+
+Output:-
+Name                                               Designation Code
+-------------------------------------------------- ----------------
+Shyam                                                           102
+Mohan                                                           102
+Anil                                                            102
+
+Query:2
+select staff_code "Code",staff_name "Name",dept_code "Department number",extract(year from sysdate)-extract(year from hiredate) "year" from staff_masters 
+where (extract(year from sysdate)-extract(year from hiredate))>=18
+order by (extract(year from sysdate)-extract(year from hiredate));
+
+Output:-
+       Code Name                                               Department number       year
+---------- -------------------------------------------------- ----------------- ----------
+    100004 Anil                                                              20         18
+    100006 Allen                                                             30         18
+    100005 John                                                              10         18
+
+Query:3
+select * from staff_masters where mgr_code is null;
+
+Output:-
+no rows selected
+
+Query:4
+select * from book_masters where book_name like'%\&*%' or book_pub_year between 2001 and 2004;
+
+Output:-
+  BOOK_CODE BOOK_NAME                                          BOOK_PUB_YEAR BOOK_PUB_AUTHOR
+---------- -------------------------------------------------- ------------- --------------------------------------------------
+  10000003 JAVA Complete Reference                                     2004 H.Schild
+  10000007 Intoduction To Algorithams                                  2001 Cormen
+  10000009 Introduction to O/S                                         2001 Millan
+
+Query:5
+ select staff_name "Name" from staff_masters where staff_name like'%\_%';
+
+Output:-
+no rows selected
