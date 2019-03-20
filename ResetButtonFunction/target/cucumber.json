@@ -1,0 +1,129 @@
+[
+  {
+    "comments": [
+      {
+        "line": 1,
+        "value": "#Author: Rahul Sharma"
+      }
+    ],
+    "line": 4,
+    "elements": [
+      {
+        "line": 6,
+        "name": "Verification of Valid data",
+        "description": "",
+        "id": "verification-of-username-password;verification-of-valid-data",
+        "type": "scenario",
+        "keyword": "Scenario",
+        "steps": [
+          {
+            "result": {
+              "duration": 8416636617,
+              "status": "passed"
+            },
+            "line": 7,
+            "name": "Open the firefox and lauch the application",
+            "match": {
+              "location": "StepDef.open_the_firefox_and_lauch_the_application()"
+            },
+            "keyword": "Given "
+          },
+          {
+            "result": {
+              "duration": 2191647897,
+              "status": "passed"
+            },
+            "line": 8,
+            "name": "Enter the Valid Data",
+            "match": {
+              "location": "StepDef.enter_the_Valid_Data(DataTable)"
+            },
+            "rows": [
+              {
+                "cells": [
+                  "Fields",
+                  "Values"
+                ],
+                "line": 9
+              },
+              {
+                "cells": [
+                  "User Name",
+                  "Rahul"
+                ],
+                "line": 10
+              },
+              {
+                "cells": [
+                  "Password",
+                  "asd"
+                ],
+                "line": 11
+              },
+              {
+                "cells": [
+                  "Confirm Password",
+                  "asd"
+                ],
+                "line": 12
+              },
+              {
+                "cells": [
+                  "First Name",
+                  "Rahul"
+                ],
+                "line": 13
+              },
+              {
+                "cells": [
+                  "Last Name",
+                  "Sharma"
+                ],
+                "line": 14
+              },
+              {
+                "cells": [
+                  "Email",
+                  "rs9858266@gmail.com"
+                ],
+                "line": 15
+              },
+              {
+                "cells": [
+                  "Address",
+                  "deep puram,aurangabad,Mathura"
+                ],
+                "line": 16
+              },
+              {
+                "cells": [
+                  "Phone",
+                  "7894561239"
+                ],
+                "line": 17
+              }
+            ],
+            "keyword": "When "
+          },
+          {
+            "result": {
+              "duration": 326818291,
+              "status": "passed"
+            },
+            "line": 19,
+            "name": "User registrattion should be successfull",
+            "match": {
+              "location": "StepDef.user_registrattion_should_be_successfull()"
+            },
+            "keyword": "Then "
+          }
+        ]
+      }
+    ],
+    "name": "Verification of Username password",
+    "description": "",
+    "id": "verification-of-username-password",
+    "keyword": "Feature",
+    "uri": "verification/verify.feature"
+  }
+]
